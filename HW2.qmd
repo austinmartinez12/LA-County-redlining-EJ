@@ -76,38 +76,6 @@ tm_shape(map_inequal) +
 **The percentage of census block groups that fall within each HOLC grade**
 
 ```{r}
-# Make a table showing the percentage of census block groups that fall within each HOLC grade
-map_inequal |>
-  na.omit() |> # remove NAs
-  st_drop_geometry() |>
-  group_by(grade) |>
-  summarise(count = n()) |>
-  mutate(percent = count / sum(count) * 100)
-```
-
-**Also include the percent of census block groups that don’t fall within a HOLC grade**
-
-```{r}
-# Make a table showing the percentage of census block groups that fall within each HOLC grade
-# Keep census block groups that don’t fall within a HOLC grade
-map_inequal |>
-  st_drop_geometry() |>
-  group_by(grade) |>
-  summarise(count = n()) |>
-  mutate(percent = count / sum(count) * 100)
-```
-
-### 3. Create at least two visualizations summarizing current conditions (from the EJScreen data) within HOLC grades using the mean of the following variables (you may combine variables or create separate plots):
-
--   \% low income
--   percentile for Particulate Matter 2.5
--   percentile for low life expectancy
-
-**Use ggplot for your visualizations! You will first need to calculate mean of each variable grouped by HOLC grade.**
-
-```{r}
-# Clean and prepare data dor visualization in ggplot
-
 # Filter ejscreen to only include data from Los Angeles County
 ejscreen_LA <- ejscreen |>
 filter(ejscreen$CNTY_NAME == "Los Angeles County")
@@ -126,6 +94,40 @@ st_crs(map_inequal2)$Name
 
 # Join HOLC neighborhood polygons with EJScreen data with st_intersects
 la_joined <- st_join(map_inequal2, ejscreen_LA, join = st_intersects)
+```
+
+
+```{r}
+# Make a table showing the percentage of census block groups that fall within each HOLC grade
+la_joined |>
+  na.omit() |> # remove NAs
+  st_drop_geometry() |>
+  group_by(grade) |>
+  summarise(count = n()) |>
+  mutate(percent = count / sum(count) * 100)
+```
+
+**Also include the percent of census block groups that don’t fall within a HOLC grade**
+
+```{r}
+# Make a table showing the percentage of census block groups that fall within each HOLC grade
+# Keep census block groups that don’t fall within a HOLC grade
+la_joined |>
+  st_drop_geometry() |>
+  group_by(grade) |>
+  summarise(count = n()) |>
+  mutate(percent = count / sum(count) * 100)
+```
+
+### 3. Create at least two visualizations summarizing current conditions (from the EJScreen data) within HOLC grades using the mean of the following variables (you may combine variables or create separate plots):
+
+-   \% low income
+-   percentile for Particulate Matter 2.5
+-   percentile for low life expectancy
+
+**Use ggplot for your visualizations! You will first need to calculate mean of each variable grouped by HOLC grade.**
+
+```{r}
 
 # For each grade calculate the mean of LOWINCPCT, PM25, and LIFEEXPPCT
 la_summary <- la_joined |>
