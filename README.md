@@ -38,7 +38,7 @@ eds223-HW2
 
 We that was used was sourced from the following locations:
 
--    The United States Environmental Protection Agency’s former EJScreen: Environmental Justice Screening and Mapping Tool.
+-   The United States Environmental Protection Agency’s former EJScreen: Environmental Justice Screening and Mapping Tool.
 
 -   The [Global Biodiversity Information Facility](https://eds-223-geospatial.github.io/assignments/gbif.org)
 

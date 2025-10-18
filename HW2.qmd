@@ -9,6 +9,8 @@ execute:
   warning: false
 ---
 
+The purpose of this script is explore the effects of historical redlining on present-day environmental and socioeconomic conditions as well as biodiversity observations in Los Angeles Country. We want to see how these conditions differ between HOLC Graded neighborhoods. This is executed using spatial data, and R packages such as tmap, ggplot2, and sf.
+
 ```{r}
 # Loading in Libraries
 library(tmap)
@@ -247,3 +249,11 @@ bird_group_percent |>
   theme_minimal()
 
 ```
+
+References
+
+Digital Scholarship Lab. (n.d.). Mapping Inequality: Redlining in New Deal America. University of Richmond. Retrieved October 15, 2025, from https://dsl.richmond.edu/panorama/redlining/
+
+United States Environmental Protection Agency. (2023). EJSCREEN: Environmental Justice Screening and Mapping Tool [Data set]. Retrieved October 15, 2025, from https://www.epa.gov/ejscreen
+
+Global Biodiversity Information Facility (GBIF). (2023). Bird observations in Los Angeles, California (2021–2023) [Data set]. Retrieved October 15, 2025, from https://www.gbif.org
