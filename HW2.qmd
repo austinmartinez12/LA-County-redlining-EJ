@@ -3,7 +3,7 @@ title: "Homework Assigment 2"
 format: html
 editor: visual
 author: "Austin Martinez"
-date: "10/8/2025"
+date: "10/18/2025"
 execute:
   message: false
   warning: false
@@ -97,7 +97,6 @@ st_crs(map_inequal2)$Name
 # Join HOLC neighborhood polygons with EJScreen data with st_intersects
 la_joined <- st_join(map_inequal2, ejscreen_LA, join = st_intersects)
 ```
-
 
 ```{r}
 # Make a table showing the percentage of census block groups that fall within each HOLC grade
@@ -250,10 +249,10 @@ bird_group_percent |>
 
 ```
 
-References
+**References:**
 
-Digital Scholarship Lab. (n.d.). Mapping Inequality: Redlining in New Deal America. University of Richmond. Retrieved October 15, 2025, from https://dsl.richmond.edu/panorama/redlining/
+-   Digital Scholarship Lab. (n.d.). Mapping Inequality: Redlining in New Deal America. University of Richmond. Retrieved October 15, 2025, from https://dsl.richmond.edu/panorama/redlining/
 
-United States Environmental Protection Agency. (2023). EJSCREEN: Environmental Justice Screening and Mapping Tool [Data set]. Retrieved October 15, 2025, from https://www.epa.gov/ejscreen
+-   United States Environmental Protection Agency. (2023). EJSCREEN: Environmental Justice Screening and Mapping Tool \[Data set\]. Retrieved October 15, 2025, from https://www.epa.gov/ejscreen
 
-Global Biodiversity Information Facility (GBIF). (2023). Bird observations in Los Angeles, California (2021–2023) [Data set]. Retrieved October 15, 2025, from https://www.gbif.org
+-   Global Biodiversity Information Facility (GBIF). (2023). Bird observations in Los Angeles, California (2021–2023) \[Data set\]. Retrieved October 15, 2025, from https://www.gbif.org

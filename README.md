@@ -1,4 +1,4 @@
-## Homework Assignment 1:
+## Homework Assignment 2:
 
 ### Exploring patterns of environmental justice
 
