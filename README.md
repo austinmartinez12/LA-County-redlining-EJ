@@ -6,13 +6,29 @@
 
 #### Purpose
 
-The purpose of this repository is to create 2 maps using data downloaded from the EPA website at the block group level for Monterrey County, CA. These maps were generated using the tmap package. The first map shows the percentile for people of color rate in Monterey County. The second map shows exposure risk for toxic air pollutants in Monterey County.
+The purpose of this repository is explore the effects of historical redlining on present-day environmental and socioeconomic conditions as well as biodiversity observations in Los Angeles Country. We want to see how these conditions differ between HOLC Graded neighborhoods. This is executed using spatial data, and R packages such as tmap, ggplot2, and sf.
 
 #### Contents
 
 This repository contains:
 
+eds223-HW2
 
+-   README.md
+
+-   HW2.qmd
+
+-   .gitignore
+
+-   HW2_files
+
+-   data
+
+    -   ejscreen
+
+    -   gbif-birds-LA
+
+    -   mapping-inequality
 
 #### Contributors
 
@@ -20,9 +36,18 @@ This repository contains:
 
 #### Data Access
 
+We that was used was sourced from the following locations:
+
+-    The United States Environmental Protection Agency’s former EJScreen: Environmental Justice Screening and Mapping Tool.
+
+-   The [Global Biodiversity Information Facility](https://eds-223-geospatial.github.io/assignments/gbif.org)
+
+-   The Digital Scholarship Lab, University of Richmond – *Mapping Inequality Project*
 
 #### References
 
--   United States Environmental Protection Agency. 2015. EJSCREEN. Retrieved: 10, 06, 2025, from (<https://drive.google.com/file/d/1nG6Nj1bXfzQFOVMO8Km3eNy4SWu1YcIQ/view>)
+-   Digital Scholarship Lab. (n.d.). *Mapping Inequality: Redlining in New Deal America*. University of Richmond. Retrieved October 15, 2025, from <https://dsl.richmond.edu/panorama/redlining/>
 
--   Wade, A. J. (2022, February 25). *Monterey County: Racial distribution and air pollution.* ArcGIS StoryMaps. [https://storymaps.arcgis.com/stories/4f19c2da231b4ecb98bc43db9b85e931](https://storymaps.arcgis.com/stories/4f19c2da231b4ecb98bc43db9b85e931?utm_source=chatgpt.com)
+-   United States Environmental Protection Agency. (2023). *EJSCREEN: Environmental Justice Screening and Mapping Tool* [Data set]. Retrieved October 15, 2025, from <https://www.epa.gov/ejscreen>
+
+-   Global Biodiversity Information Facility (GBIF). (2023). *Bird observations in Los Angeles, California (2021–2023)* [Data set]. Retrieved October 15, 2025, from <https://www.gbif.org>
