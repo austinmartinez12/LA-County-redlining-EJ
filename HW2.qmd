@@ -1,0 +1,247 @@
+---
+title: "Homework Assigment 2"
+format: html
+editor: visual
+author: "Austin Martinez"
+date: "10/8/2025"
+execute:
+  message: false
+  warning: false
+---
+
+```{r}
+# Loading in Libraries
+library(tmap)
+library(here)
+library(dplyr)
+library(sf)
+library(ggplot2)
+```
+
+# **Part 1: Legacy of redlining in current environmental (in)justice**
+
+### 1. Create a map of historical redlining neighborhoods, including:
+
+```{r}
+# Read in data
+map_inequal <- st_read(here("data", "mapping-inequality", "mapping-inequality-los-angeles.json"), quiet = TRUE) # Add quiet = TRUE to get rid of informational output
+ejscreen <- st_read(here("data", "ejscreen", "EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb"), quiet = TRUE)
+birds_la <- st_read(here("data", "gbif-birds-LA", "gbif-birds-LA.shp"), quiet = TRUE)
+
+```
+
+**Neighborhoods colored by HOLC grade**
+
+```{r}
+# Make a map showing neighborhoods colored by HOLC grade
+tm_shape(map_inequal) +
+  tm_polygons() +
+  tm_fill("grade") +
+  tm_borders() 
+```
+
+**An appropriate base map**
+
+```{r}
+# Make a map showing neighborhoods colored by HOLC grade and add a base map
+tm_shape(map_inequal) +
+  tm_basemap() +
+  tm_polygons() +
+  tm_fill("grade") +
+  tm_borders()
+```
+
+**A clear title and legend**
+
+```{r}
+# Make a map showing neighborhoods colored by HOLC grade and add a base map, title, and legend
+tm_shape(map_inequal) +
+  tm_basemap() +
+  tm_fill("grade", title = "HOLC Grade", palette = c( # Assign custom colors to grades
+      "A" = "green3",
+      "B" = "yellow1",
+      "C" = "orange",
+      "D" = "red",
+      "E" = "gray" )) +
+  tm_borders() +
+  tm_title(text = "HOLC Neighborhood Grades in Los Angeles County",
+            frame = TRUE) + # Move title out of the map so it dosen't cover it
+  tm_scale_bar() +
+  tm_compass(position = c('bottom', "left"))
+
+```
+
+### 2. Create a table summarizing:
+
+**The percentage of census block groups that fall within each HOLC grade**
+
+```{r}
+# Make a table showing the percentage of census block groups that fall within each HOLC grade
+map_inequal |>
+  na.omit() |> # remove NAs
+  st_drop_geometry() |>
+  group_by(grade) |>
+  summarise(count = n()) |>
+  mutate(percent = count / sum(count) * 100)
+```
+
+**Also include the percent of census block groups that don’t fall within a HOLC grade**
+
+```{r}
+# Make a table showing the percentage of census block groups that fall within each HOLC grade
+# Keep census block groups that don’t fall within a HOLC grade
+map_inequal |>
+  st_drop_geometry() |>
+  group_by(grade) |>
+  summarise(count = n()) |>
+  mutate(percent = count / sum(count) * 100)
+```
+
+### 3. Create at least two visualizations summarizing current conditions (from the EJScreen data) within HOLC grades using the mean of the following variables (you may combine variables or create separate plots):
+
+-   \% low income
+-   percentile for Particulate Matter 2.5
+-   percentile for low life expectancy
+
+**Use ggplot for your visualizations! You will first need to calculate mean of each variable grouped by HOLC grade.**
+
+```{r}
+# Clean and prepare data dor visualization in ggplot
+
+# Filter ejscreen to only include data from Los Angeles County
+ejscreen_LA <- ejscreen |>
+filter(ejscreen$CNTY_NAME == "Los Angeles County")
+
+# Check if CRSs match
+st_crs(ejscreen_LA)$Name
+st_crs(map_inequal)$Name
+
+# Tranform CRS to make them match using ejscreen_LA's CRS
+map_inequal2 <- st_transform(map_inequal, st_crs(ejscreen_LA))
+
+# Check if CRSs match
+st_crs(ejscreen_LA)$Name
+st_crs(map_inequal2)$Name
+
+
+# Join HOLC neighborhood polygons with EJScreen data with st_intersects
+la_joined <- st_join(map_inequal2, ejscreen_LA, join = st_intersects)
+
+# For each grade calculate the mean of LOWINCPCT, PM25, and LIFEEXPPCT
+la_summary <- la_joined |>
+  group_by(grade) |>
+  summarise(
+    mean_low_income = mean(LOWINCPCT, na.rm = TRUE),
+    mean_pm25 = mean(PM25, na.rm = TRUE),
+    mean_life_exp = mean(LIFEEXPPCT, na.rm = TRUE)
+  )
+
+
+```
+
+```{r}
+
+# Create bar plot showing mean_low_income in each HOLC grade
+la_summary |>
+  na.omit() |>
+  ggplot(aes(x=grade, y=mean_low_income, fill = grade)) +
+  geom_col() +
+  labs( title = "Average % low Income by HOLC Grade",
+        fill = "HOLC Grade",
+        x = "HOLC Grade",
+        y = "Average % low Income") +
+  theme_minimal()
+
+```
+
+```{r}
+# Create bar plot showing mean_life_exp in each HOLC grade}
+la_summary |>
+  na.omit() |>
+  ggplot(aes(x=grade, y=mean_life_exp, fill = grade)) +
+  geom_col() +
+  labs( title = "Average Percentile for Low Life Expectancy by HOLC Grade",
+        fill = "HOLC Grade",
+        x = "HOLC Grade",
+        y = "Average Percentile for Low Life Expectancy") +
+    theme_minimal()
+
+```
+
+```{r}
+# Create bar plot showing mean_pm25 in each HOLC grade
+la_summary |>
+  na.omit() |>
+  ggplot(aes(x=grade, y=mean_pm25, fill = grade)) +
+  geom_col() +
+  labs( title = "Average % low Income by HOLC Grade",
+        fill = "HOLC Grade",
+        x = "HOLC Grade",
+        y = "Average percentile for Particulate Matter") +
+  theme_minimal()
+
+```
+
+### 4. Write a brief paragraph reflecting on these results
+
+-   **Interpret the patterns you observe in your results**
+-   **Discuss potential relationships between historical redlining grades and current environmental/socioeconomic conditions**
+
+There is a clear pattern in my results. Across low income percentage, particulate matter (PM2.5) exposure, and low life expectancy percentiles every neighborhood in HOLC Grade D shows worse current conditions. Every single variable has A with the best conditions, B with the second best, C with the third best, and D with the worst. My results make it clear that living in Grade D neighborhoods exposes you to worse conditions compared to Grade A neighborhoods.
+
+This data shows that although redlining no longer takes place today, its environmental and socioeconomic effects are still present. When these grades were first established, they influenced where local governments permitted factories, highways, and other developments to be built. This often allowed greater pollution and neglect in Grade C and D neighborhoods. When similar environmental issues occurred in Grade A areas, more care and resources were devoted to addressing them.
+
+# Part 2: Legacy of redlining in biodiversity observations
+
+**For this assignment, you must produce the following based on observations from 2021-2023:**
+
+1.  **A figure summarizing the percent of observations within redlined neighborhoods within each HOLC grade**
+
+**Create a visualizations that shows:**
+
+-   **The percentage of bird observations within each HOLC grade**
+-   **Include an appropriate title, axis labels, and legend**
+
+```{r}
+# Check if CRSs match
+st_crs(birds_la)$Name
+st_crs(map_inequal)$Name
+
+# Tranform CRS to make them match
+birds_la2 <- st_transform(birds_la, st_crs(map_inequal))
+
+# Check if CRSs match
+st_crs(birds_la2)$Name
+st_crs(map_inequal)$Name
+
+# Make both layers valid
+birds_la2 <- st_make_valid(birds_la2)
+map_inequal <- st_make_valid(map_inequal)
+
+# Join HOLC neighborhood polygons with birds_la2 data with st_intersects
+birds_map_joined <- st_join(map_inequal, birds_la2, join = st_intersects)
+
+```
+
+```{r}
+# Find the percentage of bird observations within each HOLC grade
+bird_group_percent <- birds_map_joined |>
+  na.omit() |>
+  st_drop_geometry() |>
+  group_by(grade) |>
+  summarise(count = n()) |>
+  mutate(percent = count / sum(count) * 100)
+```
+
+```{r}
+# Create bar plot showing percent bird observations within each HOLC grade
+bird_group_percent |>
+  ggplot(aes(x=grade, y=percent, fill = grade)) +
+  geom_col() +
+  labs( title = "Percent Bird Observations Within Each HOLC Grade",
+        fill = "HOLC Grade",
+        x = "HOLC Grade",
+        y = "Percent Bird Observations") +
+  theme_minimal()
+
+```
