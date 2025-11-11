@@ -2,7 +2,9 @@
 
 ### Exploring patterns of environmental justice
 
-![](https://bondlink-cdn.com/987/Seal.I2UQ4U1n.png){width="200" fig-align="center"}
+<div style="text-align: center;">
+  <img src="https://bondlink-cdn.com/987/Seal.I2UQ4U1n.png" width="200"/>
+</div>
 
 #### Purpose
 
