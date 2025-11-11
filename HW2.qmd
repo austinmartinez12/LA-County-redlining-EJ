@@ -3,7 +3,7 @@ title: "Homework Assigment 2"
 format: html
 editor: visual
 author: "Austin Martinez"
-date: "10/18/2025"
+date: "11/10/2025"
 execute:
   message: false
   warning: false
@@ -18,6 +18,7 @@ library(here)
 library(dplyr)
 library(sf)
 library(ggplot2)
+library(kableExtra)
 ```
 
 # **Part 1: Legacy of redlining in current environmental (in)justice**
@@ -60,11 +61,17 @@ tm_shape(map_inequal) +
 tm_shape(map_inequal) +
   tm_basemap() +
   tm_fill("grade", title = "HOLC Grade", palette = c( # Assign custom colors to grades
-      "A" = "green3",
-      "B" = "yellow1",
-      "C" = "orange",
-      "D" = "red",
-      "E" = "gray" )) +
+      "A" = "chartreuse2",
+      "B" = "deepskyblue",
+      "C" = "gold",
+      "D" = "firebrick1",
+      "E" = "gray" ),
+  labels = c(
+      "A" = "A - Best",
+      "B" = "B - Still Desirable",
+      "C" = "C - Definitely Declining",
+      "D" = "D - Hazardous"
+    )) +
   tm_borders() +
   tm_title(text = "HOLC Neighborhood Grades in Los Angeles County",
             frame = TRUE) + # Move title out of the map so it dosen't cover it
@@ -78,20 +85,29 @@ tm_shape(map_inequal) +
 **The percentage of census block groups that fall within each HOLC grade**
 
 ```{r}
+#| message: true
+#| warning: true
+
 # Filter ejscreen to only include data from Los Angeles County
 ejscreen_LA <- ejscreen |>
 filter(ejscreen$CNTY_NAME == "Los Angeles County")
 
 # Check if CRSs match
-st_crs(ejscreen_LA)$Name
-st_crs(map_inequal)$Name
+if (st_crs(ejscreen_LA) == st_crs(map_inequal)) {
+  message("🟢 CRSs match")
+} else {
+  warning("❗ CRSs don't match!")
+}
 
 # Tranform CRS to make them match using ejscreen_LA's CRS
 map_inequal2 <- st_transform(map_inequal, st_crs(ejscreen_LA))
 
-# Check if CRSs match
-st_crs(ejscreen_LA)$Name
-st_crs(map_inequal2)$Name
+# Verify that CRSs match
+if (st_crs(ejscreen_LA) == st_crs(map_inequal2)) {
+  message("🟢 CRSs match")
+} else {
+  warning("❗ CRSs don't match!")
+}
 
 
 # Join HOLC neighborhood polygons with EJScreen data with st_intersects
@@ -105,7 +121,10 @@ la_joined |>
   st_drop_geometry() |>
   group_by(grade) |>
   summarise(count = n()) |>
-  mutate(percent = count / sum(count) * 100)
+  mutate(percent = count / sum(count) * 100) |>
+  kable(caption = "Percentage of Census Block Groups Within Each HOLC Grade",
+        col.names = c("HOLC Grade", "Count", "Percent (%)")) |>
+  kable_styling(full_width = FALSE, bootstrap_options = "bordered")
 ```
 
 **Also include the percent of census block groups that don’t fall within a HOLC grade**
@@ -117,7 +136,10 @@ la_joined |>
   st_drop_geometry() |>
   group_by(grade) |>
   summarise(count = n()) |>
-  mutate(percent = count / sum(count) * 100)
+  mutate(percent = count / sum(count) * 100)|>
+  kable(caption = "Percentage of Census Block Groups Within and Outside HOLC-Graded Areas",
+        col.names = c("HOLC Grade", "Count", "Percent (%)")) |>
+  kable_styling(full_width = FALSE, bootstrap_options = "bordered")
 ```
 
 ### 3. Create at least two visualizations summarizing current conditions (from the EJScreen data) within HOLC grades using the mean of the following variables (you may combine variables or create separate plots):
@@ -129,7 +151,6 @@ la_joined |>
 **Use ggplot for your visualizations! You will first need to calculate mean of each variable grouped by HOLC grade.**
 
 ```{r}
-
 # For each grade calculate the mean of LOWINCPCT, PM25, and LIFEEXPPCT
 la_summary <- la_joined |>
   group_by(grade) |>
@@ -138,8 +159,6 @@ la_summary <- la_joined |>
     mean_pm25 = mean(PM25, na.rm = TRUE),
     mean_life_exp = mean(LIFEEXPPCT, na.rm = TRUE)
   )
-
-
 ```
 
 ```{r}
@@ -153,6 +172,11 @@ la_summary |>
         fill = "HOLC Grade",
         x = "HOLC Grade",
         y = "Average % low Income") +
+  scale_fill_manual(values = c(
+    "A" = "chartreuse2",
+    "B" = "deepskyblue",
+    "C" = "gold",
+    "D" = "firebrick1")) +
   theme_minimal()
 
 ```
@@ -167,7 +191,12 @@ la_summary |>
         fill = "HOLC Grade",
         x = "HOLC Grade",
         y = "Average Percentile for Low Life Expectancy") +
-    theme_minimal()
+  scale_fill_manual(values = c(
+    "A" = "chartreuse2",
+    "B" = "deepskyblue",
+    "C" = "gold",
+    "D" = "firebrick1")) +
+  theme_minimal()
 
 ```
 
@@ -177,10 +206,15 @@ la_summary |>
   na.omit() |>
   ggplot(aes(x=grade, y=mean_pm25, fill = grade)) +
   geom_col() +
-  labs( title = "Average % low Income by HOLC Grade",
+  labs( title = "Average percentile for Particulate Matter by HOLC Grade",
         fill = "HOLC Grade",
         x = "HOLC Grade",
         y = "Average percentile for Particulate Matter") +
+  scale_fill_manual(values = c(
+    "A" = "chartreuse2",
+    "B" = "deepskyblue",
+    "C" = "gold",
+    "D" = "firebrick1")) +
   theme_minimal()
 
 ```
@@ -206,19 +240,18 @@ This data shows that although redlining no longer takes place today, its environ
 -   **Include an appropriate title, axis labels, and legend**
 
 ```{r}
-# Check if CRSs match
-st_crs(birds_la)$Name
-st_crs(map_inequal)$Name
+#| message: true
+#| warning: true
 
-# Tranform CRS to make them match
-birds_la2 <- st_transform(birds_la, st_crs(map_inequal))
-
-# Check if CRSs match
-st_crs(birds_la2)$Name
-st_crs(map_inequal)$Name
+# Verify that CRSs match
+if (st_crs(birds_la) == st_crs(map_inequal)) {
+  message("🟢 CRSs match")
+} else {
+  warning("❗ CRSs don't match!")
+}
 
 # Make both layers valid
-birds_la2 <- st_make_valid(birds_la2)
+birds_la2 <- st_make_valid(birds_la)
 map_inequal <- st_make_valid(map_inequal)
 
 # Join HOLC neighborhood polygons with birds_la2 data with st_intersects
@@ -245,9 +278,17 @@ bird_group_percent |>
         fill = "HOLC Grade",
         x = "HOLC Grade",
         y = "Percent Bird Observations") +
+  scale_fill_manual(values = c(
+    "A" = "chartreuse2",
+    "B" = "deepskyblue",
+    "C" = "gold",
+    "D" = "firebrick1")) +
   theme_minimal()
 
 ```
+### Spolier alert!! Our results don’t match the findings from Ellis-Soto et al. 2023! Read the abstract of the study. Why might we have obtained different results in our analysis? What did the paper consider that we did not?
+
+My results don’t match the findings from Ellis-Soto et al. 2023. We obtained different results for a multitude of reasons. The first being that we only looked at data from Los Angeles County, while they used a biodiversity data collected across and within 195 metropolitan areas in the  United States covering >30 million people across 38 states. Another reason is that we used the raw counts of bird observations, whereas Ellis-Soto et al. (2023) accounted for differences in present day vegetation, open space, and population density. Since our sampling area was smaller and we didn’t account for the same variables as Ellis-Soto et al. (2023), our data likely reflects patterns of active birder locations instead of the true sampling density or accessibility across neighborhoods.
 
 **References:**
 

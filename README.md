@@ -2,7 +2,7 @@
 
 ### Exploring patterns of environmental justice
 
-![](https://www.governmentjobs.com/AgencyPages/montereycounty/agencyImages/download/MC_SEAL_2023.png?upscale=True){width="100px" fig-align="center"}
+![](https://bondlink-cdn.com/987/Seal.I2UQ4U1n.png){width="100px" fig-align="center"}
 
 #### Purpose
 
@@ -12,23 +12,20 @@ The purpose of this repository is explore the effects of historical redlining on
 
 This repository contains:
 
-eds223-HW2
-
--   README.md
-
--   HW2.qmd
-
--   .gitignore
-
--   HW2_files
-
--   data
-
-    -   ejscreen
-
-    -   gbif-birds-LA
-
-    -   mapping-inequality
+```         
+.
+├── data
+│   ├── ejscreen
+│   ├── gbif-birds-LA
+│   └── mapping-inequality
+├── eds223-HW2.Rproj
+├── HW2_files
+│   ├── figure-html
+│   └── libs
+├── HW2.html
+├── HW2.qmd
+└── README.md
+```
 
 #### Contributors
 
